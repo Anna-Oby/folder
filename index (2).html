@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Карточка юридического лица — прототип</title>
+<style>
+:root{
+  --bg:#eef1f6; --card:#ffffff; --ink:#17202e; --muted:#667085; --line:#e4e9f2;
+  --blue:#2563eb; --blue-soft:#dbe7ff; --indigo:#4f46e5; --indigo-soft:#e3e1fd;
+  --teal:#0e9f8a; --teal-soft:#d7f2ee; --amber:#d97706; --amber-soft:#fdeeda;
+  --red:#dc2626; --red-soft:#fde3e3; --green:#16a34a; --green-soft:#dcf3e5;
+  --purple:#7c3aed; --purple-soft:#ece4fd; --pink:#db2777; --pink-soft:#fbe3ef;
+  --cyan:#0891b2; --cyan-soft:#d6f0f6; --gray:#98a2b3;
+  --side:#111a2c; --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.08);
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45}
+button{font:inherit;cursor:pointer;border:none;background:none}
+input,select{font:inherit;color:inherit}
+
+/* ===== Header ===== */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;padding:12px 22px;background:#fff;border-bottom:1px solid var(--line)}
+.logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;flex:none}
+.topbar h1{font-size:16px;font-weight:700}
+.topbar .sub{font-size:12px;color:var(--muted)}
+.topbar .sp{flex:1}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;font-weight:600;font-size:13px;border:1px solid var(--line);background:#fff;color:var(--ink);transition:.15s}
+.btn:hover{border-color:#c7d2e3;background:#f8fafd}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:#1d4fd7}
+.btn.success{background:var(--green);border-color:var(--green);color:#fff}
+.btn.small{padding:5px 10px;font-size:12px;border-radius:7px}
+
+/* ===== Layout ===== */
+.layout{display:flex;min-height:calc(100vh - 61px)}
+aside{width:240px;flex:none;background:var(--side);padding:16px 12px;position:sticky;top:61px;height:calc(100vh - 61px);overflow:auto}
+.nav-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b8a;padding:10px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 12px;border-radius:9px;color:#b8c3d8;font-weight:600;font-size:13.5px;margin-bottom:2px}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:var(--blue);color:#fff}
+.side-note{margin-top:16px;padding:12px;border-radius:10px;background:rgba(255,255,255,.05);font-size:11.5px;color:#8fa0bd;line-height:2}
+main{flex:1;padding:22px 26px 110px;min-width:0}
+.view{display:none}
+.view.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ===== Common ===== */
+.page-head{display:flex;align-items:flex-end;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.page-head h2{font-size:20px;font-weight:800}
+.page-head p{color:var(--muted);font-size:13px;max-width:860px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card .card-h{padding:13px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card .card-h h3{font-size:14px;font-weight:700}
+.card .card-b{padding:15px 18px}
+.grid{display:grid;gap:14px}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.mono{font-family:"SF Mono",Consolas,monospace;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:8px 12px;border-bottom:1px solid var(--line);background:#fafbfe;font-weight:700}
+td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+
+/* KPI */
+.kpis{grid-template-columns:repeat(4,1fr)}
+.kpi{padding:15px 18px;position:relative;overflow:hidden}
+.kpi .n{font-size:30px;font-weight:800;letter-spacing:-.02em;margin-top:4px}
+.kpi .t{font-size:12.5px;color:var(--muted);font-weight:600}
+.kpi .d{font-size:11.5px;margin-top:6px;font-weight:600}
+.kpi .bar{position:absolute;left:0;top:0;bottom:0;width:4px}
+.kpi.good .bar{background:var(--green)} .kpi.warn .bar{background:var(--amber)}
+.kpi.bad .bar{background:var(--red)} .kpi.info .bar{background:var(--blue)} .kpi.purple .bar{background:var(--purple)}
+.d.up{color:var(--green)} .d.down{color:var(--red)} .d.mid{color:var(--amber)}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;padding:2.5px 8px;border-radius:20px;white-space:nowrap}
+.own-HRD{background:var(--purple-soft);color:#6d28d9}
+.own-HRBP{background:var(--blue-soft);color:#1d4fd7}
+.own-HRA{background:var(--teal-soft);color:#0b7d6c}
+.own-HRIS{background:var(--indigo-soft);color:#4338ca}
+.own-HRP{background:var(--amber-soft);color:#b45309}
+.own-HRR{background:var(--pink-soft);color:#be185d}
+.own-HRRep{background:var(--cyan-soft);color:#0e7490}
+.own-Q{background:var(--red-soft);color:#b91c1c}
+.src-1c{background:#eef1f6;color:#667085;font-weight:600;text-transform:none}
+.src-auto{background:#eef1f6;color:#667085;font-weight:600;text-transform:none}
+.src-man{background:#fff;color:#98a2b3;border:1px dashed #cfd7e4;font-weight:500;text-transform:none}
+.badge.dim{opacity:.72;font-weight:600}
+.b-app{background:#eef1f6;color:#667085}
+.b-app.on{background:var(--indigo-soft);color:#4338ca}
+.b-warn{background:var(--red-soft);color:#b91c1c}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--green-soft);color:#15803d}
+.pill.pend{background:var(--amber-soft);color:#b45309}
+.pill.mismatch{background:var(--red-soft);color:#b91c1c}
+.pill.reorg{background:var(--purple-soft);color:#6d28d9}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+
+/* Alerts & questions */
+.alert{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;border-radius:11px;border:1px solid var(--line);background:#fff;margin-bottom:9px}
+.alert .ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex:none}
+.alert.a-pend .ic{background:var(--amber-soft);color:var(--amber)}
+.alert.a-mismatch .ic{background:var(--red-soft);color:var(--red)}
+.alert.a-reorg .ic{background:var(--purple-soft);color:var(--purple)}
+.alert .tt{font-weight:700;font-size:13px}
+.alert .dd{font-size:12px;color:var(--muted);margin-top:2px}
+.q-it{display:flex;gap:10px;padding:10px 13px;border:1px dashed #e3c98f;border-radius:11px;background:#fffdf7;margin-bottom:9px}
+.q-it .qn{width:22px;height:22px;border-radius:50%;background:var(--amber);color:#fff;font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.q-it .tt{font-weight:700;font-size:12.5px}
+.q-it .dd{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+/* Donut / bars / workload */
+.donut-wrap{display:flex;align-items:center;gap:18px}
+.legend{font-size:12px}
+.legend .li{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start}
+.legend .li .dot{margin-top:5px}
+.hbar{margin-bottom:12px}
+.hbar .lbl{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;margin-bottom:5px}
+.hbar .track{height:14px;border-radius:7px;background:#eef1f6;overflow:hidden;display:flex}
+.hbar .seg{height:100%}
+.wl-it{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:12.5px}
+.wl-it:last-child{border-bottom:none}
+.wl-it .nm{flex:1;font-weight:700}
+.wl-it .ct{white-space:nowrap;color:var(--muted);font-weight:600;font-size:11.5px}
+.wl-it .ct b{color:var(--ink)}
+
+/* Legal Structure (периметры) */
+.peri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+.peri-card .p-head{padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+.peri-card .p-head h3{font-size:15px;font-weight:800}
+.peri-card .p-head .cnt{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:2px}
+.peri-card .p-body{padding:12px 16px}
+.bg-t{font-weight:800;font-size:12.5px;margin:10px 0 3px;display:flex;align-items:center;gap:8px}
+.bg-t:first-child{margin-top:0}
+.sg-t{font-size:11px;color:var(--muted);font-weight:700;margin:8px 0 5px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.04em}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:8px;background:#fff;border:1px solid var(--line);font-size:11.5px;font-weight:600;cursor:pointer;transition:.15s}
+.chip:hover{box-shadow:var(--shadow)}
+.chip .dot{width:7px;height:7px}
+.chip.warn{border-color:#f3c98b}
+
+/* ===== Карточка ===== */
+.card-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px;border-bottom:1px solid var(--line)}
+.card-head h2{font-size:18px;font-weight:800}
+.card-head .meta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.seg-tog{display:inline-flex;background:#eef1f6;border-radius:9px;padding:3px;gap:2px}
+.seg-tog button{padding:6px 13px;border-radius:7px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.seg-tog button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.15)}
+.sec{padding:0;border-bottom:1px solid var(--line)}
+.sec:last-child{border-bottom:none}
+.sec-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 20px;background:#f8fafd;border-bottom:1px solid var(--line)}
+.sec-h h3{font-size:13px;font-weight:800}
+.sec-h .hint{font-size:11px;color:var(--muted)}
+.own-sec-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 20px;background:#f4f6fd;border-bottom:1px solid var(--line)}
+.own-sec-h .cnt{margin-left:auto;font-size:11px;color:var(--muted);font-weight:700}
+.ft{width:100%}
+.ft th{font-size:10px;padding:5px 12px}
+.ft td{padding:6px 12px;border-bottom:1px solid #eef1f6;vertical-align:middle}
+.ft .fname{font-weight:700;font-size:13px;line-height:1.35}
+.ft .fname-cell{width:37%;min-width:250px}
+.ft .fname-cell .badge{vertical-align:1px;margin-left:2px}
+.ft .fcomm{display:flex;gap:5px;align-items:flex-start;margin-top:4px;font-size:11px;color:#b45309;font-weight:600}
+.ft .fcomm svg{flex:none;margin-top:1px}
+.ft .valcell{width:400px;min-width:280px}
+.ft .srccell{width:190px;min-width:160px}
+.block-row td{background:#eaf0fa;border-top:2px solid #cfddf3;padding:8px 12px 7px;font-weight:800;font-size:12.5px;color:#2b3a55}
+.block-row .bc{margin-left:10px;font-weight:600;color:#8fa0bd;font-size:11px}
+.mx-wrap{max-height:72vh;overflow:auto}
+.mx thead th{position:sticky;top:0;z-index:3}
+.mx .own{font-size:9.5px;color:#98a2b3;font-weight:500;text-transform:none;letter-spacing:0;margin-top:2px}
+.mx td.rowh{cursor:pointer;font-weight:600;white-space:nowrap}
+.mx td.rowh:hover{color:var(--blue)}
+.v-in{width:100%;padding:5px 9px;border:1px solid #cdd6e6;border-radius:7px;font-size:12.5px;font-weight:600;background:#fff}
+.v-in:focus{outline:2px solid var(--blue-soft);border-color:var(--blue)}
+tr.locked td{background:#f7f8fb;opacity:.6}
+tr.locked .v-in{background:#eceff5}
+.switch{position:relative;display:inline-block;width:36px;height:20px;flex:none}
+.switch input{opacity:0;width:0;height:0}
+.sl{position:absolute;inset:0;background:#d3dae6;border-radius:20px;transition:.2s;cursor:pointer}
+.sl::before{content:"";position:absolute;width:15px;height:15px;left:3px;top:2.5px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.switch input:checked+.sl{background:var(--green)}
+.switch input:checked+.sl::before{transform:translateX(15px)}
+.sw-wrap{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700}
+.sw-wrap .off{color:var(--gray)}
+.hist{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:0 20px 14px;background:#fafbff}
+.hist .hh{font-size:12px;font-weight:800;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.hist .hi{display:flex;gap:10px;font-size:12px;padding:4px 0;border-top:1px dashed var(--line)}
+.hist .hi .hd{color:var(--muted);flex:none;font-family:Consolas,monospace;font-size:11px}
+.lockpanel{margin:12px 20px;border:1px dashed #cdd6e6;border-radius:11px;padding:12px 15px;display:flex;gap:11px;align-items:flex-start;background:#f8fafd;font-size:12px;color:var(--muted)}
+
+/* timeline */
+.tl{position:relative;padding-left:22px}
+.tl::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:#e4e9f2}
+.tl-it{position:relative;padding-bottom:12px}
+.tl-it::before{content:"";position:absolute;left:-21px;top:4px;width:10px;height:10px;border-radius:50%;background:#fff;border:2.5px solid var(--indigo)}
+.tl-it.auto::before{border-color:var(--teal)}
+.tl-it .tt{font-size:12.5px;font-weight:600}
+.tl-it .dd{font-size:11.5px;color:var(--muted)}
+
+/* matrix */
+.mx-wrap{overflow-x:auto}
+.mx th:first-child{position:sticky;left:0;background:#fafbfe;z-index:2;min-width:180px}
+.mx td:first-child{position:sticky;left:0;background:#fff;z-index:2;font-weight:600}
+.mx td:first-child .sys{display:block;font-size:10.5px;color:var(--muted);font-weight:500}
+.mx .colh{font-size:10.5px;font-weight:700;line-height:1.2;max-width:76px;word-break:break-word;text-transform:none;letter-spacing:0;cursor:pointer}
+.mx .cell{width:24px;height:24px;border-radius:6px;display:inline-block;vertical-align:middle}
+.c2{background:var(--green)} .c0{background:#e6eaf1}
+
+/* case */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.vs .col-h{display:flex;align-items:center;gap:9px;font-weight:800;font-size:14px;margin-bottom:10px}
+.vs ul{list-style:none}
+.vs li{display:flex;gap:9px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.vs li:last-child{border-bottom:none}
+.vs li::before{content:"—";color:var(--muted);flex:none}
+.vs .today .col-h{color:#b91c1c}
+.vs .future .col-h{color:#15803d}
+.raci td,.raci th{text-align:center;font-size:11.5px}
+.raci td:first-child,.raci th:first-child{text-align:left}
+.ri{display:inline-block;min-width:24px;height:24px;line-height:24px;border-radius:7px;font-weight:800;font-size:11.5px;padding:0 3px}
+.ri.R{background:var(--blue-soft);color:#1d4fd7}
+.ri.A{background:var(--red-soft);color:#b91c1c}
+.ri.RA{background:linear-gradient(135deg,var(--blue-soft) 50%,var(--red-soft) 50%);color:#17202e}
+.ri.C{background:var(--amber-soft);color:#b45309}
+.ri.I{background:#eef1f6;color:#667085}
+.flow{display:flex;gap:0;align-items:stretch;flex-wrap:wrap;margin-top:6px}
+.flow .st{flex:1;min-width:150px;background:#f6f9ff;border:1px solid var(--line);border-radius:11px;padding:12px;position:relative}
+.flow .st .n{width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.flow .st b{font-size:12.5px;display:block;margin-bottom:3px}
+.flow .st span{font-size:11.5px;color:var(--muted)}
+.flow .arr{align-self:center;color:#9aa7bd;padding:0 6px;font-size:18px}
+
+/* model tab */
+.filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px}
+.filters select,.filters input{padding:7px 11px;border:1px solid #cdd6e6;border-radius:8px;background:#fff;font-size:12.5px;font-weight:600}
+.filters input{min-width:220px}
+.mrow .app-LE_HR_Support{color:#4338ca;font-weight:700}
+.mrow .app-ALL_LE{color:#667085}
+
+/* toast & tour */
+#toast{position:fixed;right:22px;bottom:22px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.toast{background:#111a2c;color:#fff;padding:12px 16px;border-radius:11px;font-size:13px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.3);max-width:380px;animation:tin .3s ease;display:flex;gap:9px;align-items:flex-start}
+.toast.ok{border-left:4px solid var(--green)} .toast.warn{border-left:4px solid var(--amber)} .toast.info{border-left:4px solid var(--blue)}
+@keyframes tin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+#tour{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:150;width:min(660px,calc(100vw - 40px));background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 40px rgba(16,24,40,.22);display:none;overflow:hidden}
+#tour.show{display:block;animation:fade .25s}
+#tour .th{display:flex;align-items:center;gap:9px;padding:11px 16px;background:linear-gradient(90deg,#1d4fd7,#7c3aed);color:#fff;font-weight:800;font-size:13px}
+#tour .tb{padding:14px 16px;font-size:13.5px;line-height:1.55}
+#tour .tf{display:flex;align-items:center;gap:8px;padding:11px 16px;border-top:1px solid var(--line)}
+#tour .dots{display:flex;gap:5px;margin-right:auto}
+#tour .dots i{width:7px;height:7px;border-radius:50%;background:#d5dce8}
+#tour .dots i.on{background:var(--blue)}
+.hl{outline:3px solid #f59e0b;outline-offset:3px;border-radius:10px;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{outline-color:#f59e0b}50%{outline-color:#fcd34d}}
+
+@media (max-width:1200px){.peri-grid{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media print{
+  aside,.topbar .btn,#tour,#toast,.no-print{display:none!important}
+  body{background:#fff}
+  .layout{display:block}
+  main{padding:0}
+  .view{display:block!important;page-break-after:always}
+  .card{box-shadow:none}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">ЮЛ</div>
+  <div>
+    <h1>Карточка юридического лица</h1>
+    <div class="sub">Прототип для демонстрации · HRD · HR Advisory (HRBP) · HR Operations · HR Payroll · HR Reward · HR Reporting</div>
+  </div>
+  <div class="sp"></div>
+  <button class="btn primary" onclick="startTour()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    Демо-сценарий
+  </button>
+  <button class="btn" onclick="window.print()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+    Отчёт для HRD
+  </button>
+  <button class="btn" onclick="resetDemo()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 109-9 9.7 9.7 0 00-6.7 2.8L3 8m0-5v5h5"/></svg>
+    Сброс
+  </button>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="nav-label">Прототип</div>
+    <button class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      Дашборд
+    </button>
+    <button class="nav-item" data-tab="tree" onclick="switchTab('tree')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v6m0 0H6a2 2 0 00-2 2v8m8-10h6a2 2 0 012 2v8M7 21h.01M12 21h.01M17 21h.01"/></svg>
+      Legal Structure
+    </button>
+    <button class="nav-item" data-tab="card" onclick="switchTab('card')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h6M7 13h10M7 17h4"/></svg>
+      Карточка юрлица
+    </button>
+    <button class="nav-item" data-tab="matrix" onclick="switchTab('matrix')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+      Матрица покрытия
+    </button>
+    <button class="nav-item" data-tab="model" onclick="switchTab('model')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+      Модель данных
+    </button>
+    <button class="nav-item" data-tab="case" onclick="switchTab('case')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.8.7 1 1.5 1 2.5h6c0-1 .2-1.8 1-2.5A6 6 0 0012 3z"/></svg>
+      Обоснование
+    </button>
+    <div class="side-note">
+      <b style="color:#dbe4f5">Источники полей:</b><br>
+      <span class="badge src-1c">ИЗ 1С · ПРОВЕРИТЬ</span> пришло из первичного ввода — ответственный подтверждает<br>
+      <span class="badge src-man">ВВОД ВРУЧНУЮ</span> заполняет владелец поля<br>
+      <span class="badge src-auto">АВТО · HRPT</span> присваивается системой<br><br>
+      <b style="color:#dbe4f5">Владельцы:</b><br>
+      <span class="badge own-HRD">HRD</span> <span class="badge own-HRBP">HRBP</span> <span class="badge own-HRA">HR Admin</span> <span class="badge own-HRIS">HR IS</span><br>
+      <span class="badge own-HRP">HR Payroll</span> <span class="badge own-HRR">HR Reward</span> <span class="badge own-HRRep">HR Reporting</span> <span class="badge own-Q">?</span>
+    </div>
+  </aside>
+
+  <main>
+    <section class="view active" id="view-dashboard"></section>
+    <section class="view" id="view-tree"></section>
+    <section class="view" id="view-card"></section>
+    <section class="view" id="view-matrix"></section>
+    <section class="view" id="view-model"></section>
+    <section class="view" id="view-case"></section>
+  </main>
+</div>
+
+<div id="tour">
+  <div class="th">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    <span id="tour-title">Демо-сценарий</span>
+    <span style="margin-left:auto;font-weight:600;font-size:12px" id="tour-count"></span>
+  </div>
+  <div class="tb" id="tour-text"></div>
+  <div class="tf">
+    <div class="dots" id="tour-dots"></div>
+    <button class="btn small" onclick="endTour()">Завершить</button>
+    <button class="btn small primary" id="tour-next" onclick="tourNext()">Далее</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script>
+/* ==================================================================
+   МОДЕЛЬ ДАННЫХ КАРТОЧКИ (5 блоков, 49 полей)
+   src: '1c' — приходит из 1С/ЕГРЮЛ, требуется проверка/подтверждение
+        'man' — вводится ответственным в форму
+        'auto' — присваивается HRPT автоматически
+   ================================================================== */
+const MODEL=[
+ {block:'1. Идентификация',fields:[
+  {f:'legal_id',ru:'Legal ID — уникальный идентификатор в HRPT',owner:'HRIS',type:'Char',app:'ALL_LE',src:'auto'},
+  {f:'inn',ru:'ИНН организации',owner:'HR Admin',type:'Char',app:'LE_HR_Support',src:'1c'},
+  {f:'ogrn',ru:'ОГРН организации',owner:'HR Admin',type:'Char',app:'LE_HR_Support',src:'1c'},
+  {f:'okved',ru:'ОКВЭД организации',owner:'HR Admin',type:'Char',app:'LE_HR_Support',src:'1c'},
+  {f:'full_ru',ru:'Полное наименование юр лица на русском языке',owner:'HR Admin',type:'VarChar',app:'ALL_LE',src:'1c',hist:true},
+  {f:'short_ru',ru:'Сокращённое наименование юр лица на русском языке',owner:'HR Admin',type:'VarChar',app:'ALL_LE',src:'1c',hist:true},
+  {f:'name_ru',ru:'Краткое наименование юр лица на русском языке',owner:'HR IS',type:'VarChar',app:'ALL_LE',src:'1c',hist:true},
+  {f:'full_en',ru:'Полное наименование юр лица на английском языке',owner:'HR Admin',type:'VarChar',app:'ALL_LE',src:'1c',hist:true},
+  {f:'short_en',ru:'Сокращённое наименование юр лица на английском языке',owner:'HR Admin',type:'VarChar',app:'ALL_LE',src:'1c',hist:true},
+  {f:'name_en',ru:'Краткое наименование юр лица на английском языке',owner:'HR IS',type:'VarChar',app:'ALL_LE',src:'1c',hist:true},
+  {f:'fin_id',ru:'Финансовый код юр лица',owner:'HR IS',type:'VarChar',app:'ALL_LE',src:'auto'},
+  {f:'addr',ru:'Юридический адрес',owner:'HR IS',type:'VarChar',app:'LE_HR_Support',src:'1c'},
+  {f:'reg_date',ru:'Дата регистрации юр лица',owner:'HR Admin',type:'Date',app:'LE_HR_Support',src:'1c',comm:'В 1С нет такой даты — берём дату регистрации в налоговых органах'},
+ ]},
+ {block:'2. Управленческий контур',fields:[
+  {f:'perimeter',ru:'Периметр',owner:'HRD',type:'VarChar',app:'ALL_LE',src:'man',opts:'PER'},
+  {f:'bg',ru:'Бизнес-группа',owner:'HRD',type:'VarChar',app:'ALL_LE',src:'man',opts:'BG'},
+  {f:'subgroup',ru:'Подгруппа («колодец»)',owner:'HRD',type:'VarChar',app:'ALL_LE',src:'man',opts:'SG'},
+  {f:'gendir',ru:'Генеральный директор',owner:'HR Admin',type:'VarChar',app:'ALL_LE',src:'1c',comm:'Открытый вопрос: применимость поля для ИХ'},
+  {f:'own_gd',ru:'Владелец от бизнеса — global department',owner:'HRBP',type:'VarChar',app:'ALL_LE',src:'man'},
+  {f:'own_name',ru:'Владелец от бизнеса — Name',owner:'HRBP',type:'VarChar',app:'ALL_LE',src:'man'},
+  {f:'own_hrbp',ru:'Владелец от HRBP',owner:'HRBP',type:'VarChar',app:'ALL_LE',src:'man',opts:'HRBP'},
+  {f:'eff_start',ru:'Дата заведения в систему',owner:'HR Admin',type:'Date',app:'LE_HR_Support',src:'man'},
+  {f:'sla_le',ru:'С какими юр лицами подписан SLA',owner:'HRBP',type:'VarChar',app:'ALL_LE',src:'man'},
+  {f:'sla_flag',ru:'Наличие SLA (пользование IT-инфраструктурой и хранение перс. данных)',owner:'?',type:'BOOLEAN',app:'ALL_LE',src:'man',comm:'Владелец не назначен — требуется решение'},
+  {f:'nda_flag',ru:'Наличие NDA для передачи HR-данных',owner:'?',type:'BOOLEAN',app:'ALL_LE',src:'man',comm:'Владелец не назначен — требуется решение'},
+  {f:'restricted',ru:'Признак «секретности» юр лица',owner:'HRD',type:'BOOLEAN',app:'ALL_LE',src:'man',comm:'Требуется прописать правила «секретности»'},
+  {f:'fin_cons',ru:'Консолидация в финансовую отчётность',owner:'HR Reward',type:'BOOLEAN',app:'ALL_LE',src:'man'},
+  {f:'bf_cons',ru:'Консолидация в группу БФ',owner:'HR Reporting',type:'BOOLEAN',app:'ALL_LE',src:'man'},
+  {f:'cib_vtb',ru:'Входит в перечень юр лиц для отчётности КИБ',owner:'HR Reporting',type:'BOOLEAN',app:'ALL_LE',src:'man',comm:'Смена владельца процесса: new P / old P'},
+  {f:'demo_rep',ru:'Сбор данных в HRPT (демографические данные)',owner:'HR Reporting',type:'BOOLEAN',app:'ALL_LE',src:'man'},
+  {f:'yearend',ru:'Участник Year End',owner:'HR Reward',type:'BOOLEAN',app:'ALL_LE',src:'man'},
+  {f:'cib_in',ru:'Дата включения в КИБ',owner:'HRD',type:'Date',app:'ALL_LE',src:'man'},
+  {f:'cib_out',ru:'Дата выхода из КИБ',owner:'HRD',type:'Date',app:'ALL_LE',src:'man'},
+ ]},
+ {block:'3. HR-поддержка',fields:[
+  {f:'sup_from',ru:'Дата передачи юр лица на поддержку',owner:'HRD',type:'Date',app:'LE_HR_Support',src:'man'},
+  {f:'sup_to',ru:'Дата вывода юр лица с поддержки',owner:'HRD',type:'Date',app:'LE_HR_Support',src:'man'},
+  {f:'pay_sup',ru:'Компания на поддержке Payroll',owner:'HR Payroll',type:'BOOLEAN',app:'ALL_LE',src:'man'},
+  {f:'out_flag',ru:'Юр лицо на поддержке аутсорсинга Payroll',owner:'HR Payroll',type:'VarChar',app:'ALL_LE',src:'man',comm:'Открытый вопрос: разделить на курируемый и не курируемый?',opts:['','Курируемый','Не курируемый']},
+  {f:'out_who',ru:'Юр лицо, которое поддерживает компанию со стороны аутсорсинга',owner:'HR Payroll',type:'VarChar',app:'ALL_LE',src:'man'},
+  {f:'adm_sup',ru:'Компания на поддержке HR Admin',owner:'HR Admin',type:'BOOLEAN',app:'ALL_LE',src:'man'},
+  {f:'dsource',ru:'Источник данных',owner:'HR IS',type:'VarChar',app:'ALL_LE',src:'man',opts:'DS'},
+ ]},
+ {block:'4. Операционная готовность',fields:[
+  {f:'pay_proj',ru:'Наличие зарплатного проекта',owner:'HR Payroll',type:'BOOLEAN',app:'LE_HR_Support',src:'man'},
+  {f:'acc_type',ru:'Тип счетов бухгалтерского учёта (ЕПС / МинФин)',owner:'HR Payroll',type:'VarChar',app:'LE_HR_Support',src:'man',opts:['','ЕПС','МинФин']},
+  {f:'pkg_type',ru:'Тип пакета документов HR (стандартный / упрощённый)',owner:'HR Admin',type:'VarChar',app:'LE_HR_Support',src:'man',opts:['','Стандартный','Упрощённый']},
+  {f:'quota',ru:'Наличие отчётности по квотированию на юр лице',owner:'HR Admin',type:'BOOLEAN',app:'LE_HR_Support',src:'man'},
+  {f:'kedo',ru:'КЭДО Saby',owner:'HR Admin',type:'BOOLEAN',app:'LE_HR_Support',src:'man'},
+  {f:'it_contour',ru:'IT-контур / системы',owner:'HR IS',type:'VarChar',app:'LE_HR_Support',src:'man'},
+ ]},
+ {block:'5. Специальные признаки',fields:[
+  {f:'zero',ru:'Компания — «нулёвка»',owner:'HR Payroll',type:'BOOLEAN',app:'LE_HR_Support',src:'man'},
+  {f:'bu_method',ru:'Способ передачи в б/у (Navision, 1С бухгалтерия, Диасофт и тд)',owner:'HR Payroll',type:'VarChar',app:'LE_HR_Support',src:'man',opts:['','Navision','1С бухгалтерия','Диасофт']},
+  {f:'lic_flag',ru:'Наличие у юр лица лицензии',owner:'HR Admin',type:'BOOLEAN',app:'LE_HR_Support',src:'man',comm:'Открытый вопрос: насколько необходимо вести в системе? Сейчас — Excel HR Admin, данные от комплаенс для LoD'},
+  {f:'lic_type',ru:'Вид лицензии: лицензия Банка России, ИТ-лицензия и тд',owner:'HR Admin',type:'VarChar',app:'LE_HR_Support',src:'man',opts:['','Лицензия Банка России','ИТ-лицензия','Прочее']},
+ ]},
+];
+const ALL_FIELDS=MODEL.flatMap(b=>b.fields.map(x=>({...x,block:b.block})));
+const OWNER_CLS={'HRD':'own-HRD','HRBP':'own-HRBP','HR Admin':'own-HRA','HR IS':'own-HRIS','HRIS':'own-HRIS','HR Payroll':'own-HRP','HR Reward':'own-HRR','HR Reporting':'own-HRRep','?':'own-Q'};
+const ownerBadge=(o,dim)=>'<span class="badge '+(OWNER_CLS[o]||'own-Q')+(dim?' dim':'')+'">'+o+'</span>';
+const srcBadge=s=>s==='1c'?'<span class="badge src-1c">Данные из 1С — подтвердить</span>':(s==='auto'?'<span class="badge src-auto">Авто · HRPT</span>':'<span class="badge src-man">Поле ввода данных</span>');
+const appLabel=a=>a==='ALL_LE'?'Все юр лица':'Только юр лица на HR-поддержке';
+
+const PER={PN:'Новый периметр',PS:'Старый периметр',PO:'Other subs'};
+const BGS={PN:['Банк'],PS:['БФ','МНИ'],PO:['БФ','МНИ']};
+const SGS={'Банк':['Колодец 1','Колодец 2'],'БФ':['Колодец 1','Колодец 2'],'МНИ':['Колодец 1']};
+const HRBP=['Иванова А.','Петров С.','Сидорова М.','Ким Д.'];
+const DS=['1С:ЗУП','SAP HCM','Saby'];
+const GENDIRS=['Иванов А.С.','Петров Д.М.','Сидоров Е.В.','Кузнецов О.Н.','Смирнов В.П.','Волков И.К.','Орлова К.М.','Зимин Р.Г.'];
+const OWNGD=['Global department 1','Global department 2','Global department 3','Global department 4'];
+const STATUSES={ok:['Подтверждено','ok'],pend:['Требует подтверждения','pend'],mismatch:['Расхождение','mismatch'],reorg:['Реорганизация','reorg']};
+const SCOLORS={ok:'#16a34a',pend:'#d97706',mismatch:'#dc2626',reorg:'#7c3aed'};
+
+/* Открытые вопросы модели — из комментариев */
+const QUESTIONS=[
+ {n:1,field:'SLA flag · NDA flag',q:'Назначить владельцев двух полей (сейчас — «?»)',who:'Решает HRD · предложение: HR IS + Инфобез',risk:'Без владельца SLA/NDA не контролируются — риск при передаче перс. данных'},
+ {n:2,field:'Outsourcing support flag',q:'Разделить на два вида аутсорсинга — курируемый и не курируемый HR Payroll?',who:'HR Payroll',risk:'Разная глубина контроля аутсорсера сейчас не различима в данных'},
+ {n:3,field:'License_flag',q:'Вести ли данные о лицензиях в системе? Сейчас — Excel HR Admin, данные от комплаенс для LoD',who:'HR Admin · участвуют LoD, HR IS',risk:'Обучение по назначению зависит от ручной пересылки файлов'},
+ {n:4,field:'GenDir',q:'Применимость поля для ИХ',who:'HR Admin + HRD',risk:'Неполнота управленческих данных по части популяции'},
+ {n:5,field:'Restricted access flag',q:'Прописать правила «секретности» юр лица',who:'HRD',risk:'Доступы выдаются без единых правил'},
+ {n:6,field:'Registration date',q:'Источник даты: в 1С отсутствует, берём дату регистрации в налоговых органах',who:'HR IS',risk:'Ручное дозаполнение HR Admin — нужен источник или интеграция'},
+ {n:7,field:'Отчётность КИБ',q:'Зафиксировать смену владельца процесса (new P / old P)',who:'HR Reporting',risk:'Отчётность КИБ может уйти не тому владельцу'},
+];
+
+/* ==================== ГЕНЕРАТОР ДЕМО-ПОПУЛЯЦИИ: 88 ЮРЛИЦ ==================== */
+const MISMATCH_IDX=new Set([10,27,55,71]);
+const REORG_IDX=new Set([40,66]);
+const PEND_IDX=new Set([5,12,19,26,34,44,52,60,68,76,84,87]);
+const HIST_IDX={2:'«Прежнее наименование»',15:'«Прежнее наименование»',33:'«Прежнее наименование»'};
+function genEntities(){
+  const plan=[
+    ['PN','Банк','Колодец 1',22],['PN','Банк','Колодец 2',18],
+    ['PS','БФ','Колодец 1',16],['PS','БФ','Колодец 2',14],
+    ['PO','МНИ','Колодец 1',14],
+  ];
+  const list=[];let n=0;
+  const cfgByNum={};
+  plan.forEach(([p,b,g,c])=>{for(let i=0;i<c;i++){n++;cfgByNum[n]={p,b,g};}});
+  const OUTSIDE=6, TOTAL=88;
+  for(let i=1;i<=TOTAL;i++){
+    const cfg=cfgByNum[i]||null;
+    const out=!cfg;
+    const isPO=cfg&&cfg.p==='PO';
+    const type=isPO?'ALL_LE':'LE_HR_Support';
+    const y=2000+(i*7)%26, mo=(i*5)%12+1, dy=(i*11)%27+1;
+    const sup=type==='LE_HR_Support';
+    const pend=PEND_IDX.has(i)||out;
+    const v={
+      legal_id:'HRPT-'+String(1000+i*7),
+      inn:String(7700000000+i*13).slice(0,10),
+      ogrn:String(1027700000000+i*7919).slice(0,13),
+      kpp:String(770100100+i).slice(0,9),
+      okved:['47.11','62.01','64.19','66.19','70.10'][i%5],
+      full_ru:'Юр лицо '+i,short_ru:'Юр лицо '+i,name_ru:'Юр лицо '+i,
+      full_en:'Legal entity '+i,short_en:'LE '+i,name_en:'LE '+i,
+      fin_id:'FIN-'+String(1000+i*3),
+      addr:'г. Москва, ул. Демонстрационная, д. '+(i+1),
+      reg_date:(dy<10?'0'+dy:dy)+'.'+(mo<10?'0'+mo:mo)+'.'+y,
+      gendir:GENDIRS[i%GENDIRS.length],
+      perimeter:cfg?cfg.p:'',bg:cfg?cfg.b:'',subgroup:cfg?cfg.g:'',
+      own_gd:pend?'':OWNGD[i%4],own_name:pend?'':'Владелец бизнеса '+(i%9+1),own_hrbp:HRBP[i%4],
+      eff_start:sup&&!pend?('20'+(14+i%9))+'-01-01':'',
+      sla_le:pend?'':'ООО «Управляющая компания»',
+      sla_flag:!pend&&i%5!==0,nda_flag:!pend&&i%4!==0,restricted:i%29===0,
+      fin_cons:!pend&&i%2===0,bf_cons:!pend&&i%3===0,cib_vtb:!pend&&i%6===0,
+      demo_rep:!pend,yearend:!pend&&i%2===1,
+      cib_in:(!pend&&i%6===0)?'20'+(14+i%9)+'-01-01':'',cib_out:'',
+      sup_from:sup&&!pend?('20'+(14+i%9))+'-01-01':'',sup_to:'',
+      pay_sup:sup&&i%11!==0,adm_sup:sup&&i%6!==0,
+      out_flag:(sup&&i%8===0)?'Курируемый':'',out_who:(sup&&i%8===0)?'Аутсорсер '+(i%3+1):'',
+      dsource:DS[i%3],
+      pay_proj:sup&&i%5!==0,acc_type:sup?(i%3?'ЕПС':'МинФин'):'',pkg_type:sup?(i%4?'Стандартный':'Упрощённый'):'',
+      quota:sup&&i%3===0,kedo:sup&&i%2===0,it_contour:sup?DS[i%3]:'',
+      zero:sup&&i%17===0,bu_method:sup?['Navision','1С бухгалтерия','Диасофт'][i%3]:'',
+      lic_flag:sup&&i%9===0,lic_type:(sup&&i%9===0)?(i%2?'Лицензия Банка России':'ИТ-лицензия'):'',
+    };
+    let status='ok',conf=true;
+    if(MISMATCH_IDX.has(i))status='mismatch';
+    if(REORG_IDX.has(i))status='reorg';
+    if(pend){status='pend';conf=false;}
+    const audit=[{d:'02.09.2026, 10:14',t:'Синхронизация идентификаторов с 1С / HRPT выполнена',who:'Система (авто)',auto:true}];
+    if(status==='ok')audit.push({d:'15.06.2026, 16:40',t:'Плановое подтверждение актуальности выполнено',who:'HRBP · '+v.own_hrbp,auto:false});
+    if(status==='mismatch')audit.unshift({d:'09.09.2026, 22:03',t:'Обнаружено расхождение: юридический адрес в 1С ≠ ЕГРЮЛ. Запрос уточнения направлен в первичный ввод',who:'Система мониторинга (авто)',auto:true});
+    if(status==='reorg')audit.unshift({d:'07.09.2026, 18:30',t:'ЕГРЮЛ: начата процедура присоединения. Требуется решение о дате вывода из периметра и с поддержки',who:'Система мониторинга (авто)',auto:true});
+    if(status==='pend')audit.unshift({d:'08.09.2026, 11:20',t:'Карточка создана автоматически. Задача на подтверждение направлена HRBP ('+v.own_hrbp+')'+(out?' — не определён периметр':''),who:'Система (авто)',auto:true});
+    list.push({id:'yl'+i,type,conf,status,updated:'10.09.2026, 09:12',vals:v,audit,hist:HIST_IDX[i]?[{d:'до 2021 г.',n:HIST_IDX[i]}]:[]});
+  }
+  return list;
+}
+const ENTITIES=genEntities();
+const SNAPSHOT=JSON.stringify(ENTITIES);
+let currentId='yl1',demoId=null,viewMode='blocks';
+let mFilter={block:'',owner:'',app:'',q:''};
+
+/* ==================== УТИЛИТЫ ==================== */
+const $=s=>document.querySelector(s);
+const $$=s=>document.querySelectorAll(s);
+const byId=id=>ENTITIES.find(e=>e.id===id);
+function nowStr(){const d=new Date();const p=n=>String(n).padStart(2,'0');return p(d.getDate())+'.'+p(d.getMonth()+1)+'.'+d.getFullYear()+', '+p(d.getHours())+':'+p(d.getMinutes());}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function pill(e){const s=STATUSES[e.status];return '<span class="pill '+s[1]+'">'+s[0]+'</span>';}
+function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'info');t.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="flex:none;margin-top:1px"><path d="'+(type==='ok'?'M20 6L9 17l-5-5':'M12 8v5m0 3h.01M12 3a9 9 0 100 18 9 9 0 000-18')+'"/></svg><span>'+msg+'</span>';$('#toast').appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='.4s';setTimeout(()=>t.remove(),400)},4500);}
+function addAudit(e,t,who){e.audit.unshift({d:nowStr(),t:t,who:who||'HR Advisory',auto:false});}
+function allAudit(){return ENTITIES.flatMap(e=>e.audit.map(a=>({e:e.vals.full_ru,...a}))).sort((a,b)=>a.d<b.d?1:-1).slice(0,6);}
+function fieldByKey(k){return ALL_FIELDS.find(f=>f.f===k);}
+function optionsFor(fld){
+  if(fld.opts==='PER')return Object.keys(PER);
+  if(fld.opts==='BG')return Object.values(BGS).flat();
+  if(fld.opts==='SG')return Object.values(SGS).flat();
+  if(fld.opts==='HRBP')return HRBP;
+  if(fld.opts==='DS')return DS;
+  if(Array.isArray(fld.opts))return fld.opts;
+  return null;
+}
+function statusCounts(){const t=ENTITIES.length,ok=ENTITIES.filter(e=>e.status==='ok').length,pend=ENTITIES.filter(e=>e.status==='pend').length,bad=t-ok-pend;return{t,ok,pend,bad};}
+/* поля, видимые для юрлица с учётом применимости (LE_HR_Support / ALL_LE) */
+function visibleFields(e){
+  const support=e.type==='LE_HR_Support';
+  return ALL_FIELDS.filter(f=>!(f.app==='LE_HR_Support'&&!support));
+}
+function fieldLocked(e,f){return f.app==='LE_HR_Support'&&e.type!=='LE_HR_Support';}
+/* ==================== НАВИГАЦИЯ ==================== */
+function switchTab(name){
+  $$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  $$('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+name));
+  window.scrollTo({top:0});
+}
+function openCard(id){currentId=id;switchTab('card');renderCard();window.scrollTo({top:0});}
+
+/* ==================== ДАШБОРД ==================== */
+function donutSVG(pct){
+  const r=52,c=2*Math.PI*r,off=c*(1-pct/100);
+  return '<svg width="126" height="126" viewBox="0 0 126 126" style="flex:none"><circle cx="63" cy="63" r="'+r+'" fill="none" stroke="#e9edf5" stroke-width="16"/><circle cx="63" cy="63" r="'+r+'" fill="none" stroke="#16a34a" stroke-width="16" stroke-linecap="round" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 63 63)"/><text x="63" y="61" text-anchor="middle" font-size="21" font-weight="800" fill="#17202e">'+pct+'%</text><text x="63" y="77" text-anchor="middle" font-size="10" fill="#667085">подтверждено</text></svg>';
+}
+function workload(){
+  const res={};
+  ENTITIES.filter(e=>e.status==='pend').forEach(e=>{
+    visibleFields(e).forEach(f=>{
+      const v=e.vals[f.f];
+      const empty=(v===''||v===false||v==null);
+      res[f.owner]=res[f.owner]||{man:0,chk:0};
+      if(f.src==='man'&&empty)res[f.owner].man++;
+      if(f.src==='1c'&&!empty)res[f.owner].chk++;
+    });
+  });
+  return res;
+}
+function renderDashboard(){
+  const s=statusCounts();
+  const alerts=ENTITIES.filter(e=>e.status!=='ok');
+  const shown=alerts.slice(0,6);
+  const alertIcon={pend:'M12 8v5m0 3h.01',mismatch:'M12 9v4m0 3h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z',reorg:'M17 3l4 4-4 4M21 7H9M7 21l-4-4 4-4M3 17h12'};
+  const alertTitle={pend:'Требуется подтверждение HRBP',mismatch:'Расхождение данных',reorg:'Реорганизация'};
+  const alertText={
+    pend:e=>'«'+e.vals.full_ru+'» — не подтверждена организационная принадлежность (блок 2 модели). Владелец: '+e.vals.own_hrbp+'. SLA — 3 рабочих дня.',
+    mismatch:e=>'«'+e.vals.full_ru+'» — данные карточки не совпадают с 1С / ЕГРЮЛ (юридический адрес). До закрытия расхождения значения используются с пометкой «неаудировано».',
+    reorg:e=>'«'+e.vals.full_ru+'» — по данным ЕГРЮЛ идёт процедура присоединения. Требуется решение HRD о датах вывода из периметра и с поддержки.'
+  };
+  const wl=workload();
+  const wlRows=Object.keys(wl).filter(o=>wl[o].man>0||wl[o].chk>0).map(o=>'<div class="wl-it">'+ownerBadge(o)+'<span class="nm"></span><span class="ct">ввести: <b>'+wl[o].man+'</b> · проверить из 1С: <b>'+wl[o].chk+'</b></span></div>').join('');
+  let bars='';
+  Object.keys(PER).forEach(p=>{
+    const list=ENTITIES.filter(e=>e.vals.perimeter===p);if(!list.length)return;
+    const segs=['ok','pend','mismatch','reorg'].map(st=>{const n=list.filter(e=>e.status===st).length;return n?'<div class="seg" style="width:'+(n/list.length*100)+'%;background:'+SCOLORS[st]+'" title="'+STATUSES[st][0]+': '+n+'"></div>':'';}).join('');
+    bars+='<div class="hbar"><div class="lbl"><span>'+PER[p]+'</span><span class="muted">'+list.length+' ЮЛ</span></div><div class="track">'+segs+'</div></div>';
+  });
+  const feed=allAudit().map(a=>'<div class="tl-it '+(a.auto?'auto':'')+'"><div class="tt">'+a.t+'</div><div class="dd">'+a.e+' · '+a.d+' · '+a.who+'</div></div>').join('');
+  $('#view-dashboard').innerHTML=
+  '<div class="page-head"><div><h2>Консолидированный дашборд</h2><p>Популяция юридических лиц и её актуальность. Каждое отклонение ведёт в карточку, у каждого поля карточки есть владелец и источник данных.</p></div><span class="badge src-auto" style="margin-left:auto">Синхронизация 1С / HRPT: сегодня, 09:12</span></div>'+
+  '<div class="grid kpis" style="margin-bottom:14px">'+
+    '<div class="card kpi info"><div class="bar"></div><div class="t">Всего юридических лиц</div><div class="n mono">'+s.t+'</div><div class="d muted">'+ENTITIES.filter(e=>e.type==='LE_HR_Support').length+' на HR-поддержке · '+ENTITIES.filter(e=>e.type!=='LE_HR_Support').length+' только управленческий контур</div></div>'+
+    '<div class="card kpi good"><div class="bar"></div><div class="t">Подтверждено карточек</div><div class="n mono">'+s.ok+' <span style="font-size:15px;color:var(--muted);font-weight:700">/ '+Math.round(s.ok/s.t*100)+'%</span></div><div class="d up">единая трактовка принадлежности · нет «серых зон»</div></div>'+
+    '<div class="card kpi warn"><div class="bar"></div><div class="t">Требуют подтверждения</div><div class="n mono">'+s.pend+'</div><div class="d mid">задачи назначены HRBP, SLA — 3 рабочих дня</div></div>'+
+    '<div class="card kpi purple"><div class="bar"></div><div class="t">Открытые вопросы модели</div><div class="n mono">'+QUESTIONS.length+'</div><div class="d mid">поля без владельца · правила · источники — требуют решения HRD</div></div>'+
+  '</div>'+
+  '<div class="grid" style="grid-template-columns:1.2fr 1fr;margin-bottom:14px">'+
+    '<div class="card"><div class="card-h"><h3>Очередь действий HR</h3><span class="badge b-warn">'+alerts.length+' открыто'+(alerts.length>6?' · показано '+shown.length:'')+'</span></div><div class="card-b" id="dash-alerts">'+
+      shown.map(e=>'<div class="alert a-'+e.status+'" id="alert-'+e.id+'"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="'+alertIcon[e.status]+'"/></svg></div><div style="flex:1"><div class="tt">'+alertTitle[e.status]+'</div><div class="dd">'+alertText[e.status](e)+'</div></div><button class="btn small" data-open="'+e.id+'">Открыть карточку</button></div>').join('')+
+      '<div class="muted small" style="margin-top:4px">Показаны только отклонения. Подтверждённые карточки в очередь не попадают — рутина исключена.</div>'+
+    '</div></div>'+
+    '<div class="card"><div class="card-h"><h3>Открытые вопросы модели данных</h3><span class="badge b-manual">'+QUESTIONS.length+' · решения HRD</span></div><div class="card-b" style="max-height:430px;overflow:auto">'+
+      QUESTIONS.map(q=>'<div class="q-it"><div class="qn">'+q.n+'</div><div style="flex:1"><div class="tt">'+q.field+' — '+q.q+'</div><div class="dd">'+q.who+' · Риск: '+q.risk+'</div></div></div>').join('')+
+      '<div class="small muted" style="margin-top:4px">Вопросы собраны из комментариев самой модели данных. Прототип делает неопределённость видимой — каждый вопрос превращается в решение на старте пилота.</div>'+
+    '</div></div>'+
+  '</div>'+
+  '<div class="grid" style="grid-template-columns:1.15fr 1fr 1fr">'+
+    '<div class="card"><div class="card-h"><h3>Что требуется от каждого владельца</h3><span class="badge b-auto2">по неподтверждённым карточкам</span></div><div class="card-b">'+wlRows+
+      '<div class="small muted" style="margin-top:8px">«Ввести» — пустые поля, которые владелец заполняет вручную. «Проверить из 1С» — пришедшие из первичного ввода данные, которые владелец подтверждает. Каждый отвечает только за свои поля.</div></div></div>'+
+    '<div class="card"><div class="card-h"><h3>Актуальность данных</h3></div><div class="card-b"><div class="donut-wrap">'+donutSVG(Math.round(s.ok/s.t*100))+
+      '<div class="legend">'+
+      '<div class="li"><span class="dot" style="background:#16a34a"></span><span><b>Подтверждено</b> — карточка проверена владельцем, данные можно использовать в отчётах</span></div>'+
+      '<div class="li"><span class="dot" style="background:#d97706"></span><span><b>Требует подтверждения</b> — не заполнены обязательные поля или нет подтверждения владельца</span></div>'+
+      '<div class="li"><span class="dot" style="background:#dc2626"></span><span><b>Расхождение</b> — данные карточки не совпадают с 1С / ЕГРЮЛ (что именно — видно в карточке)</span></div>'+
+      '<div class="li"><span class="dot" style="background:#7c3aed"></span><span><b>Реорганизация</b> — по данным ЕГРЮЛ идёт процедура реорганизации / присоединения</span></div>'+
+      '</div></div><div style="margin-top:10px">'+bars+'</div></div></div>'+
+    '<div class="card"><div class="card-h"><h3>Журнал изменений</h3><span class="badge b-auto2">аудит</span></div><div class="card-b"><div class="tl">'+feed+'</div></div></div>'+
+  '</div>';
+}
+
+/* ==================== LEGAL STRUCTURE ==================== */
+function renderTree(){
+  let html='<div class="page-head"><div><h2>Legal Structure — три уровня управленческого контура</h2><p>Структура строится из полей блока 2 модели: Периметр → Бизнес-группа → Подгруппа («колодец»). Владелец уровней — HRD. Цвет — актуальность карточки.</p></div></div>';
+  html+='<div class="peri-grid">';
+  Object.keys(PER).forEach(p=>{
+    const list=ENTITIES.filter(e=>e.vals.perimeter===p);if(!list.length)return;
+    const okN=list.filter(e=>e.status==='ok').length;
+    html+='<div class="card peri-card"><div class="p-head"><h3>'+PER[p]+'</h3><div class="cnt">'+list.length+' юрлиц · подтверждено '+okN+' · '+Math.round(okN/list.length*100)+'%</div></div><div class="p-body">';
+    BGS[p].forEach(bg=>{
+      const lb=list.filter(e=>e.vals.bg===bg);if(!lb.length)return;
+      html+='<div class="bg-t"><span class="dot" style="background:#4f46e5;width:7px;height:7px"></span>'+bg+'<span class="muted" style="font-weight:600">'+lb.length+'</span></div>';
+      SGS[bg].forEach(sg=>{
+        const ls=lb.filter(e=>e.vals.subgroup===sg);if(!ls.length)return;
+        html+='<div class="sg-t">'+sg+'</div><div class="chips" style="padding-left:10px">'+ls.map(e=>'<span class="chip '+(e.status!=='ok'?'warn':'')+'" data-open="'+e.id+'" title="'+STATUSES[e.status][0]+'"><span class="dot" style="background:'+SCOLORS[e.status]+'"></span>'+e.vals.full_ru+'</span>').join('')+'</div>';
+      });
+    });
+    html+='</div></div>';
+  });
+  html+='</div>';
+  const noP=ENTITIES.filter(e=>!e.vals.perimeter);
+  if(noP.length){
+    html+='<div class="card" style="border-color:#f3c98b"><div class="p-head" style="padding:14px 16px 10px;border-bottom:1px solid var(--line)"><h3 style="color:#b45309">Вне периметров — зона неопределённости</h3><div class="cnt">'+noP.length+' юрлиц · требуют решения HRD</div></div><div class="p-body"><div class="chips">'+noP.map(e=>'<span class="chip warn" data-open="'+e.id+'"><span class="dot" style="background:'+SCOLORS[e.status]+'"></span>'+e.vals.full_ru+'</span>').join('')+'</div><div class="small" style="color:#b45309;margin-top:6px">Эти юрлица сегодня трактуются подразделениями по-разному: разный периметр, разный период включения, разное покрытие процессами. В модели за это отвечают поля Периметр · Бизнес-группа · Подгруппа с датами включения и документом-основанием — владелец HRD.</div></div></div>';
+  }
+  $('#view-tree').innerHTML=html;
+}
+
+/* ==================== КАРТОЧКА ==================== */
+function fieldRow(e,f){
+  const v=e.vals[f.f];
+  const locked=fieldLocked(e,f);
+  let ctl;
+  if(f.type==='BOOLEAN'){
+    ctl='<span class="sw-wrap"><label class="switch"><input type="checkbox" data-f="'+f.f+'" '+(v?'checked':'')+(locked?' disabled':'')+'><span class="sl"></span></label><span class="'+(v?'':'off')+'">'+(v?'Да':'Нет')+'</span></span>';
+  }else{
+    const opts=optionsFor(f);
+    if(opts)ctl='<select class="v-in" data-f="'+f.f+'"'+(locked?' disabled':'')+'><option value=""></option>'+opts.map(o=>'<option '+(o===v?'selected':'')+'>'+o+'</option>').join('')+'</select>';
+    else if(f.type==='Date')ctl='<input type="date" class="v-in" data-f="'+f.f+'" value="'+esc(v)+'"'+(locked?' disabled':'')+'>';
+    else ctl='<input class="v-in" data-f="'+f.f+'" value="'+esc(v)+'"'+(locked?' disabled':'')+'>';
+  }
+  const comm=f.comm?'<div class="fcomm"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 8v5m0 3h.01M12 3a9 9 0 100 18 9 9 0 000-18"/></svg><span>'+f.comm+'</span></div>':'';
+  return '<tr class="'+(locked?'locked':'')+'" title="'+(locked?'Не применимо: юрлицо не на HR-поддержке':'')+'"><td class="fname-cell"><span class="fname">'+f.ru+'</span> '+ownerBadge(f.owner,true)+comm+'</td><td class="valcell">'+ctl+'</td><td class="srccell">'+srcBadge(f.src)+'</td></tr>';
+}
+function fieldsTable(e,fields){
+  return '<table class="ft"><thead><tr><th>Поле · ответственный</th><th style="width:400px">Значение</th><th style="width:190px">Источник данных</th></tr></thead><tbody>'+fields.map(f=>fieldRow(e,f)).join('')+'</tbody></table>';
+}
+function gatedBlockHTML(b){
+  return '<div class="sec"><div class="sec-h"><h3>'+b.block+'</h3><span class="badge b-app on">применимость LE_HR_Support</span></div><div class="lockpanel"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2.2" style="flex:none;margin-top:1px"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><div><b>Блок не применяется.</b> По модели блоки 3–5 относятся к юрлицам на HR-поддержке (LE_HR_Support). Данное юрлицо ведётся только в управленческом контуре (блоки 1–2). При переводе на поддержку блоки раскроются автоматически.</div></div></div>';
+}
+function renderCard(){
+  const e=byId(currentId),v=e.vals;
+  const confirmBlock=e.conf
+    ?'<span class="pill ok" style="padding:8px 14px">Актуально · подтверждено плановым подтверждением</span>'
+    :'<button class="btn success" id="confirm-btn" style="padding:9px 18px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Подтвердить актуальность</button>';
+  const hist=(e.hist&&e.hist.length)?'<div class="hist"><div class="hh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2.2"><path d="M3 12a9 9 0 109-9 9.7 9.7 0 00-6.7 2.8L3 8m0-5v5h5M12 7v5l3 3"/></svg>История наименований — версионирование полей name (требование модели)</div>'+e.hist.map(h=>'<div class="hi"><span class="hd">'+h.d+'</span><span>'+h.n+'</span></div>').join('')+'</div>':'';
+  let body='';
+  if(viewMode==='blocks'){
+    MODEL.forEach((b,i)=>{
+      const gated=b.fields[0].app==='LE_HR_Support';
+      if(gated&&e.type!=='LE_HR_Support'){body+=gatedBlockHTML(b);return;}
+      const vf=b.fields.filter(f=>!fieldLocked(e,f));
+      body+='<div class="sec" id="sec'+(i+1)+'"><div class="sec-h"><h3>'+b.block+'</h3><span class="hint">'+b.fields.length+' полей</span></div><div style="overflow-x:auto">'+fieldsTable(e,vf)+'</div></div>';
+    });
+  }else{
+    const order=['HRD','HRBP','HR Admin','HRIS','HR IS','HR Payroll','HR Reward','HR Reporting','?'];
+    const vf=visibleFields(e);
+    body+='<div id="ownview">';
+    order.forEach(o=>{
+      const fs=vf.filter(f=>f.owner===o);
+      if(!fs.length)return;
+      const man=fs.filter(f=>f.src==='man').length,chk=fs.filter(f=>f.src==='1c').length;
+      body+='<div class="sec"><div class="own-sec-h">'+ownerBadge(o)+'<span class="cnt">'+fs.length+' полей · из 1С на проверку: '+chk+' · ввод вручную: '+man+'</span></div><div style="overflow-x:auto">'+fieldsTable(e,fs)+'</div></div>';
+    });
+    body+='</div>';
+    if(e.type!=='LE_HR_Support'){
+      body+='<div class="sec">'+gatedBlockHTML({block:'3–5. Поддержка · Операционная готовность · Специальные признаки'})+'</div>';
+    }
+  }
+  $('#view-card').innerHTML=
+  '<div class="page-head"><button class="btn small" onclick="switchTab(\'dashboard\')">← Назад к дашборду</button></div>'+
+  '<div class="card">'+
+    '<div class="card-head"><div style="flex:1;min-width:280px"><h2>'+esc(v.full_ru)+'</h2><div class="meta" style="margin-top:6px"><span class="mono">'+esc(v.legal_id)+'</span><span>ИНН '+esc(v.inn)+'</span><span>ОГРН '+esc(v.ogrn)+'</span></div></div>'+
+    '<div class="seg-tog"><button class="'+(viewMode==='blocks'?'on':'')+'" data-mode="blocks">По блокам модели</button><button class="'+(viewMode==='owners'?'on':'')+'" data-mode="owners">По ответственным</button></div>'+
+    '<div style="display:flex;flex-direction:column;gap:5px"><span class="small muted" style="font-weight:700">Тип популяции</span><select class="v-in" data-f="type" style="width:230px"><option value="LE_HR_Support" '+(e.type==='LE_HR_Support'?'selected':'')+'>LE_HR_Support — на HR-поддержке</option><option value="ALL_LE" '+(e.type==='ALL_LE'?'selected':'')+'>ALL_LE — только упр. контур</option></select></div>'+
+    pill(e)+confirmBlock+'</div>'+
+    body+hist+
+    '<div class="sec"><div class="sec-h"><h3>История изменений</h3><span class="badge b-auto2">ПОЛНЫЙ АУДИТ</span></div><div style="padding:14px 20px"><div class="tl">'+e.audit.slice(0,6).map(a=>'<div class="tl-it '+(a.auto?'auto':'')+'"><div class="tt">'+a.t+'</div><div class="dd">'+a.d+' · '+a.who+'</div></div>').join('')+'</div></div></div>'+
+  '</div>';
+}
+
+/* ==================== МАТРИЦА ==================== */
+function renderMatrix(){
+  const sup=ENTITIES.filter(e=>e.type==='LE_HR_Support');
+  const rows=[
+    {k:'pay_sup',n:'Поддержка Payroll',o:'HR Payroll'},
+    {k:'adm_sup',n:'Поддержка HR Admin',o:'HR Admin'},
+    {k:'pay_proj',n:'Зарплатный проект',o:'HR Payroll'},
+    {k:'kedo',n:'КЭДО Saby',o:'HR Admin'},
+    {k:'quota',n:'Квотирование',o:'HR Admin'},
+    {k:'zero',n:'«Нулёвка»',o:'HR Payroll'},
+  ];
+  let html='<div class="page-head"><div><h2>Матрица покрытия: поддержка и операционная готовность</h2><p>Матрица применима только к юрлицам типа LE_HR_Support — показано '+sup.length+' из '+ENTITIES.length+'. Юрлица только с управленческим контуром (ALL_LE) в матрицу не входят. Столбцы — флаги блоков 3–4 модели с владельцами, строки — юрлица. Нажатие на строку открывает карточку.</p></div><div style="display:flex;gap:14px;margin-left:auto" class="small"><span><span class="cell c2" style="width:12px;height:12px"></span> Да</span><span><span class="cell c0" style="width:12px;height:12px"></span> Нет</span></div></div>';
+  html+='<div class="card"><div class="mx-wrap"><table class="mx"><thead><tr><th>Юр лицо</th>'+rows.map(r=>'<th><div>'+r.n+'</div><div class="own">'+r.o+'</div></th>').join('')+'</tr></thead><tbody>';
+  sup.forEach(e=>{
+    html+='<tr><td class="rowh" data-open="'+e.id+'"><span class="dot" style="background:'+SCOLORS[e.status]+';margin-right:6px"></span>'+e.vals.full_ru+'</td>'+rows.map(r=>'<td style="text-align:center"><span class="cell '+(e.vals[r.k]?'c2':'c0')+'" title="'+r.n+' — '+(e.vals[r.k]?'да':'нет')+'"></span></td>').join('')+'</tr>';
+  });
+  html+='</tbody></table></div><div class="card-b small muted">Цвет в начале строки — актуальность карточки: зелёный подтверждена, остальные — с пометкой в отчётах.</div></div>';
+  $('#view-matrix').innerHTML=html;
+  $$('#view-matrix td.rowh').forEach(td=>{td.onclick=()=>openCard(td.dataset.open);});
+}
+
+/* ==================== МОДЕЛЬ ДАННЫХ ==================== */
+function renderModel(){
+  const owners=[''];ALL_FIELDS.forEach(f=>{if(!owners.includes(f.owner))owners.push(f.owner);});
+  const blocks=[''];MODEL.forEach(b=>{if(!blocks.includes(b.block))blocks.push(b.block);});
+  let body='',shown=0;
+  MODEL.forEach(b=>{
+    if(mFilter.block&&b.block!==mFilter.block)return;
+    const rows=b.fields.filter(f=>{
+      if(mFilter.owner&&f.owner!==mFilter.owner)return false;
+      if(mFilter.app&&f.app!==mFilter.app)return false;
+      if(mFilter.q){const q=mFilter.q.toLowerCase();if(!(f.ru.toLowerCase().includes(q)))return false;}
+      return true;
+    });
+    if(!rows.length)return;
+    shown+=rows.length;
+    body+='<tr class="block-row"><td colspan="4">'+b.block+'<span class="bc">'+rows.length+' полей</span></td></tr>';
+    rows.forEach(f=>{
+      body+='<tr class="mrow" '+(f.owner==='?'?'style="background:#fff8f8"':'')+'><td style="width:230px"><span class="mono" style="color:var(--indigo);font-weight:700">'+f.f+'</span></td><td class="small">'+f.ru+(f.comm?'<div class="fcomm" style="margin-top:3px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="flex:none;margin-top:1px"><path d="M12 8v5m0 3h.01M12 3a9 9 0 100 18 9 9 0 000-18"/></svg><span>'+f.comm+'</span></div>':'')+'</td><td style="width:110px">'+ownerBadge(f.owner)+'</td><td style="width:210px" class="app-'+f.app+' small">'+appLabel(f.app)+'</td></tr>';
+    });
+  });
+  $('#view-model').innerHTML=
+  '<div class="page-head"><div><h2>Модель данных карточки</h2><p>49 полей · 5 блоков · 8 владельцев · применимость: все юрлица или только юрлица на HR-поддержке. Это технический справочник для разработки: здесь хранятся системные наименования полей и комментарии. Комментарии с вопросами — это открытые вопросы модели, вынесенные в повестку решений HRD.</p></div></div>'+
+  '<div class="filters"><select onchange="mFilter.block=this.value;renderModel()"><option value="">Все блоки</option>'+blocks.slice(1).map(b=>'<option '+(mFilter.block===b?'selected':'')+'>'+b+'</option>').join('')+'</select>'+
+  '<select onchange="mFilter.owner=this.value;renderModel()"><option value="">Все владельцы</option>'+owners.slice(1).map(o=>'<option '+(mFilter.owner===o?'selected':'')+'>'+o+'</option>').join('')+'</select>'+
+  '<select onchange="mFilter.app=this.value;renderModel()"><option value="">Любая применимость</option><option value="ALL_LE" '+(mFilter.app==='ALL_LE'?'selected':'')+'>Все юр лица</option><option value="LE_HR_Support" '+(mFilter.app==='LE_HR_Support'?'selected':'')+'>Только юр лица на HR-поддержке</option></select>'+
+  '<input placeholder="Поиск по описанию поля…" value="'+esc(mFilter.q)+'" oninput="mFilter.q=this.value;renderModel()"></div>'+
+  '<div class="card"><div class="card-h"><h3>Поля модели</h3><span class="badge b-auto2">показано '+shown+' из '+ALL_FIELDS.length+'</span>'+(mFilter.owner==='?'||body.indexOf('own-Q')>-1?'<span class="badge own-Q">есть поля без владельца</span>':'')+'</div><div style="max-height:640px;overflow:auto"><table><thead><tr><th style="width:230px">Поле (EN)</th><th>Описание</th><th style="width:110px">Владелец</th><th style="width:210px">Применимость</th></tr></thead><tbody>'+
+  body+
+  '</tbody></table></div><div class="card-b small muted">Применимость — технический атрибут для разработки. В пользовательской карточке он не показывается: состав полей определяется типом популяции автоматически.</div></div>';
+}
+
+/* ==================== ОБОСНОВАНИЕ ==================== */
+function renderCase(){
+  const raci=[
+    ['1. Идентификация','I','I','A','R','I','I','I'],
+    ['2. Управленческий контур','RA','R','R','I','I','R','R'],
+    ['3. HR-поддержка','A','I','R','R','R','I','I'],
+    ['4. Операционная готовность','I','I','R','R','R','I','I'],
+    ['5. Специальные признаки','I','I','R','I','R','I','I'],
+    ['SLA flag · NDA flag — сейчас «?»','A','I','I','I','I','I','I'],
+  ];
+  $('#view-case').innerHTML=
+  '<div class="page-head"><div><h2>Обоснование: единая модель данных и распределённая ответственность</h2><p>Страница для HRD и HR Advisory: текущее состояние, целевая модель, матрица ответственности и решения, необходимые для старта.</p></div></div>'+
+  '<div class="vs" style="margin-bottom:14px">'+
+    '<div class="card"><div class="card-b"><div class="col-h" style="color:#b91c1c"><span class="dot" style="background:#dc2626;width:10px;height:10px"></span>Текущее состояние</div><ul>'+
+      '<li>Данные по юридическим лицам распределены между подразделениями и дублируются в различных учётных форматах; единый источник отсутствует</li>'+
+      '<li>Трактовка принадлежности юрлица (периметр, бизнес-группа, подгруппа, период включения) различается между подразделениями</li>'+
+      '<li>Поля SLA flag и NDA flag не имеют назначенного владельца; контроль наличия SLA и NDA при передаче персональных данных не выполняется системно</li>'+
+      '<li>Сведения об аутсорсинге payroll, лицензиях и отчётности по квотированию ведутся подразделениями раздельно, без единой точки доступа</li>'+
+      '<li>Отчётные популяции (консолидация БФ, отчётность КИБ, демографические данные, Year End) формируются вручную по каждому юрлицу</li>'+
+      '<li>Реорганизации выявляются по факту ошибок в расчётах или при аудите, а не по событию из ЕГРЮЛ</li>'+
+    '</ul></div></div>'+
+    '<div class="card" style="border-color:#b7e4c7"><div class="card-b"><div class="col-h" style="color:#15803d"><span class="dot" style="background:#16a34a;width:10px;height:10px"></span>Целевое состояние</div><ul>'+
+      '<li>49 полей модели — единый источник данных: идентификация, управленческий контур, поддержка, операционная готовность, специальные признаки</li>'+
+      '<li>У каждого поля — владелец (HRD, HRBP, HR Admin, HR IS, HR Payroll, HR Reward, HR Reporting); каждый отвечает только за свои поля</li>'+
+      '<li>Поля с пометкой «из 1С» приходят из первичного ввода автоматически — владелец лишь проверяет и подтверждает; ручной ввод минимален</li>'+
+      '<li>Применимость ALL_LE / LE_HR_Support управляет составом карточки автоматически: юрлицо вне поддержки не видит нерелевантные блоки</li>'+
+      '<li>История наименований версионируется — переименования не нарушают отчётность за прошлые периоды</li>'+
+      '<li>Отчётные популяции (БФ, КИБ, демография, Year End) формируются мгновенно по флагам из карточек; расхождения с 1С и события реорганизации становятся задачами с владельцем и SLA</li>'+
+    '</ul></div></div>'+
+  '</div>'+
+  '<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>Матрица ответственности (RACI)</h3></div><div class="card-b" style="overflow-x:auto"><table class="raci"><thead><tr><th>Блок модели</th><th>HRD</th><th>HRBP</th><th>HR Admin</th><th>HR IS / HRIS</th><th>HR Payroll</th><th>HR Reward</th><th>HR Reporting</th></tr></thead><tbody>'+
+    raci.map(r=>'<tr'+(r[0].indexOf('?')>-1?' style="background:#fff8f8"':'')+'><td>'+r[0]+'</td>'+r.slice(1).map(v=>'<td><span class="ri '+v+'">'+v+'</span></td>').join('')+'</tr>').join('')+
+  '</tbody></table><div class="small muted" style="margin-top:10px">R — выполняет · A — отвечает за результат · RA — и то и другое · I — информируется. Строка SLA / NDA — единственная без исполнителя: модель показывает это явно, решение за HRD.</div></div></div>'+
+  '<div class="card" style="margin-bottom:14px"><div class="card-h"><h3>Целевая модель процесса</h3></div><div class="card-b"><div class="flow">'+
+    '<div class="st"><div class="n">1</div><b>Регистрация в 1С / ЕГРЮЛ</b><span>Блок 1 заполняется автоматически: идентификаторы, ИНН, ОГРН, наименования, адрес. Ручного ввода нет</span></div><div class="arr">→</div>'+
+    '<div class="st"><div class="n">2</div><b>Задачи владельцам блока 2</b><span>HRBP — владение от бизнеса, SLA; HRD — периметр, бизнес-группа, подгруппа, КИБ, секретность. SLA — 3 рабочих дня</span></div><div class="arr">→</div>'+
+    '<div class="st"><div class="n">3</div><b>Заполнение по RACI</b><span>HR Payroll — поддержка и операционная готовность; HR Admin — HR Admin, документы, лицензии; HR Reporting — отчётные флаги. Каждый — только свои поля</span></div><div class="arr">→</div>'+
+    '<div class="st"><div class="n">4</div><b>Единая точка данных</b><span>Все отчётные популяции берут данные из карточек. Расхождения с 1С и события реорганизации — автоматические задачи с владельцем</span></div><div class="arr">→</div>'+
+    '<div class="st"><div class="n">5</div><b>Плановое подтверждение актуальности</b><span>HRBP подтверждает актуальность своей популяции. Неподтверждённые карточки исключаются из управленческой отчётности</span></div>'+
+  '</div></div></div>'+
+  '<div class="card"><div class="card-h"><h3>Целевые показатели и решения для старта</h3></div><div class="card-b"><table><thead><tr><th>Показатель / решение</th><th>Сейчас</th><th>Цель (квартал)</th></tr></thead><tbody>'+
+    '<tr><td>Карточки с подтверждённым управленческим контуром (периметр / бизнес-группа / подгруппа)</td><td>нет единой оценки</td><td><b>100%</b></td></tr>'+
+    '<tr><td>SLA распределения нового юрлица между владельцами модели</td><td>не контролируется</td><td><b>≤ 3 рабочих дней</b></td></tr>'+
+    '<tr><td>Поля без владельца (SLA flag, NDA flag)</td><td>2 поля — «?»</td><td><b>0</b> — владельцы назначены решением HRD</td></tr>'+
+    '<tr><td>Открытые вопросы модели (аутсорсинг, лицензии, секретность, ИХ, источники дат)</td><td>зафиксированы в комментариях модели</td><td><b>7 решений</b> принято до старта пилота</td></tr>'+
+    '<tr><td>Отчётные популяции (БФ, КИБ, демография, Year End)</td><td>ручная сборка</td><td><b>Мгновенно</b>, из карточек</td></tr>'+
+  '</tbody></table></div></div>';
+}
+
+/* ==================== ИЗМЕНЕНИЕ ДАННЫХ ==================== */
+document.addEventListener('change',ev=>{
+  const e=byId(currentId);if(!e)return;
+  const f=ev.target.dataset.f;if(!f)return;
+  if(f==='type'){
+    e.type=ev.target.value;
+    addAudit(e,'Изменён тип популяции: '+e.type+' — состав карточки перестроен по применимости полей','HRD');
+    toast('Тип популяции изменён: карточка перестроена по правилам применимости','ok');
+    renderAll();return;
+  }
+  const fld=fieldByKey(f);if(!fld)return;
+  const val=ev.target.type==='checkbox'?ev.target.checked:ev.target.value;
+  e.vals[f]=val;
+  if(e.conf){e.conf=false;if(e.status==='ok')e.status='pend';addAudit(e,'Изменён атрибут «'+fld.ru+'» ('+fld.owner+') — подтверждение снято, требуется повторное');toast('Сохранено. Карточка требует повторного подтверждения','warn');}
+  else{addAudit(e,'Изменено поле «'+fld.ru+'» — владелец '+fld.owner);toast('Поле сохранено в карточке','ok');}
+  renderAll();
+});
+document.addEventListener('click',ev=>{
+  const opener=ev.target.closest('[data-open]');
+  if(opener){openCard(opener.dataset.open);return;}
+  const modeBtn=ev.target.closest('[data-mode]');
+  if(modeBtn){viewMode=modeBtn.dataset.mode;renderCard();return;}
+  if(ev.target.closest('#confirm-btn')){confirmCurrent();}
+});
+function confirmCurrent(){
+  const e=byId(currentId);if(!e||e.conf)return;const v=e.vals;
+  const need=[['perimeter','Периметр'],['bg','Бизнес-группа'],['subgroup','Подгруппа'],['own_hrbp','Владелец от HRBP']];
+  for(const [k,n] of need){if(!v[k]){toast('Заполните поле «'+n+'» (блок 2, владелец HRD / HRBP) — без него карточка не подтверждается','warn');return;}}
+  if(e.type==='LE_HR_Support'&&!v.eff_start){toast('Заполните «Дату заведения в систему»','warn');return;}
+  if(e.type==='LE_HR_Support'&&!v.sup_from){toast('Заполните «Дату передачи на поддержку»','warn');return;}
+  e.conf=true;e.status='ok';
+  addAudit(e,'Подтверждена актуальность карточки (блоки 1–'+(e.type==='LE_HR_Support'?'5':'2')+'). Данные переданы во все отчётные популяции','HRBP · '+v.own_hrbp);
+  toast('Карточка «'+v.full_ru+'» подтверждена · отчёты обновлены','ok');
+  renderAll();
+  if(tour.on==='confirm'){tour.on=null;setTimeout(tourNext,700);}
+}
+function renderAll(){renderDashboard();renderTree();renderCard();renderMatrix();renderModel();renderCase();}
+
+/* ==================== ДЕМО-СЦЕНАРИЙ ==================== */
+const tour={step:-1,on:null};
+const TOUR=[
+ {t:'Демо · Точка боли',tab:'dashboard',h:'#view-dashboard .kpis',x:'Стартуем с дашборда: 88 юрлиц в трёх периметрах. Часть карточек не подтверждена, есть расхождение с 1С и реорганизация. И главное — 7 открытых вопросов модели: поля без владельца, правила секретности, источники дат. Сегодня всё это разбросано по файлам разных подразделений.'},
+ {t:'Демо · Событие из 1С',tab:'dashboard',h:'#dash-alerts',act:addDemoEntity,x:'В 1С зарегистрировано новое юрлицо — «Юр лицо 89». Блок 1 карточки (идентификация) заполнился автоматически: Legal ID, ИНН, ОГРН, наименования. Человек ничего не вводил. Задача с SLA 3 дня ушла HRBP.'},
+ {t:'Демо · Что пришло из 1С',tab:'card',h:'#sec1',act:()=>openCard(demoId),x:'Карточка строится по модели. Справа от значения — ярлык источника: серый «Данные из 1С — подтвердить» означает, что значение уже пришло из первичного ввода и ответственному нужно только проверить и подтвердить его. Тонкий пунктирный «Поле ввода данных» — это поле заполняет владелец вручную. Ручной ввод минимален, дублирования данных 1С нет.'},
+ {t:'Демо · Блок 2 — управленческий контур',tab:'card',h:'#sec2',act:fillDemoOrg,x:'Блок 2 — принадлежность и владение: периметры (Новый / Старый / Other subs), бизнес-группы (Банк, БФ, МНИ), подгруппы, владелец от бизнеса и HRBP, SLA. Именно здесь снимается неоднозначность: куда включено юрлицо, с какого периода и на каком основании — один раз, с владельцем.'},
+ {t:'Демо · Применимость LE_HR_Support',tab:'card',h:'.card-head',act:setDemoType,x:'Меняем тип популяции на LE_HR_Support — юрлицо передаётся на HR-поддержку. Карточка перестроилась автоматически: раскрылись блоки 3–5 (поддержка, операционная готовность, специальные признаки). Для юрлиц вне поддержки эти блоки не показываются вовсе.'},
+ {t:'Демо · Вид «По ответственным»',tab:'card',h:'#ownview',act:()=>{fillDemoSupport();viewMode='owners';},x:'Переключаем представление карточки — теперь поля сгруппированы по владельцам: каждый ответственный в одном месте видит всё, что ему нужно ввести или проверить. Это ключевой момент для HRD: не «общая форма на всех», а персональная зона ответственности каждого.'},
+ {t:'Демо · Подтверждение',tab:'card',h:'#confirm-btn',wait:'confirm',x:'Финальный шаг — «Подтвердить актуальность». Нажмите: карточка станет источником для всех отчётных популяций (БФ, КИБ, демография, Year End), действие попадёт в аудит с именем HRBP. Ответственность — у конкретного владельца, а не «у всех и ни у кого».'},
+ {t:'Демо · Эффект',tab:'dashboard',h:'#view-dashboard .kpis',act:()=>{viewMode='blocks';},x:'Готово: KPI обновились мгновенно, юрлицо вошло в Legal Structure на трёх уровнях, очередь сократилась. Ни одного письма и ни одной сверки. Отчётные популяции собрались сами — по флагам из карточки.'},
+ {t:'Демо · Матрица покрытия',tab:'matrix',h:'#view-matrix .card',x:'Матрица применима только к юрлицам на HR-поддержке (LE_HR_Support) — модель сама определяет состав популяции. Каждый флаг — с владельцем. Раньше такая матрица собиралась днями и устаревала в момент публикации.'},
+ {t:'Демо · Решение',tab:'case',h:'#view-case',x:'Итог: единая модель на 49 полей, у каждого поля — владелец и источник; данные из 1С подтверждаются, а не перепечатываются; открытые вопросы превращены в повестку из 7 решений. Предлагаем: пилот на одном периметре, квартал, целевые KPI со страницы «Обоснование». Готовы обсудить?'},
+];
+function addDemoEntity(){
+  demoId='yl89';
+  const i=89;
+  const e={id:'yl89',type:'ALL_LE',conf:false,status:'pend',updated:'10.09.2026, 09:42',hist:[],
+    vals:{legal_id:'HRPT-'+String(1000+i*7),inn:String(7700000000+i*13).slice(0,10),ogrn:String(1027700000000+i*7919).slice(0,13),kpp:String(770100100+i).slice(0,9),okved:'64.19',full_ru:'Юр лицо 89',short_ru:'Юр лицо 89',name_ru:'Юр лицо 89',full_en:'Legal entity 89',short_en:'LE 89',name_en:'LE 89',fin_id:'FIN-'+String(1000+i*3),addr:'г. Москва, ул. Демонстрационная, д. 90',reg_date:'10.09.2026',gendir:GENDIRS[i%8],perimeter:'',bg:'',subgroup:'',own_gd:'',own_name:'',own_hrbp:'Сидорова М.',eff_start:'',sla_le:'',sla_flag:false,nda_flag:false,restricted:false,fin_cons:false,bf_cons:false,cib_vtb:false,demo_rep:false,yearend:false,cib_in:'',cib_out:'',sup_from:'',sup_to:'',pay_sup:false,out_flag:'',out_who:'',adm_sup:false,dsource:'1С:ЗУП',pay_proj:false,acc_type:'',pkg_type:'',quota:false,kedo:false,it_contour:'',zero:false,bu_method:'',lic_flag:false,lic_type:''},
+    audit:[{d:'10.09.2026, 09:42',t:'Карточка создана автоматически по данным 1С / HRPT (блок 1). Задача на подтверждение направлена HRBP (Сидорова М.)',who:'Система (авто)',auto:true}]};
+  ENTITIES.push(e);
+  toast('1С / HRPT → зарегистрировано новое юрлицо «Юр лицо 89». Блок 1 заполнен автоматически','info');
+  renderAll();
+}
+function fillDemoOrg(){
+  const e=byId(demoId);Object.assign(e.vals,{perimeter:'PS',bg:'БФ',subgroup:'Колодец 1',own_gd:OWNGD[1],own_name:'Владелец бизнеса 5',sla_le:'ООО «Управляющая компания»',restricted:false});
+  addAudit(e,'Блок 2: HRBP зафиксировал владение; HRD — Старый периметр / БФ / Колодец 1','HRBP · Сидорова М.');
+  toast('Блок 2 заполнен: владение и принадлежность зафиксированы','ok');renderAll();
+}
+function setDemoType(){
+  const e=byId(demoId);e.type='LE_HR_Support';
+  addAudit(e,'Тип популяции изменён на LE_HR_Support — юрлицо передаётся на HR-поддержку. Раскрыты блоки 3–5','HRD');
+  toast('Тип: LE_HR_Support — раскрыты блоки 3–5 по применимости модели','info');renderAll();
+}
+function fillDemoSupport(){
+  const e=byId(demoId);Object.assign(e.vals,{eff_start:'2026-09-10',sup_from:'2026-09-10',pay_sup:true,adm_sup:true,out_flag:'Не курируемый',dsource:'1С:ЗУП',pay_proj:true,acc_type:'ЕПС',pkg_type:'Стандартный',kedo:true,quota:true,it_contour:'1С:ЗУП + Saby'});
+  addAudit(e,'Блоки 3–4 заполнены владельцами: HR Payroll (поддержка, зарплатный проект, ЕПС), HR Admin (HR Admin, пакет документов, КЭДО), HR IS (DataSource, IT-контур)');
+  toast('Блоки 3–4 заполнены по RACI','ok');renderAll();
+}
+function startTour(){tour.step=0;$('#tour').classList.add('show');renderTourStep();}
+function renderTourStep(){
+  const s=TOUR[tour.step];
+  $('#tour-title').textContent=s.t;
+  $('#tour-text').innerHTML=s.x;
+  $('#tour-count').textContent=(tour.step+1)+' / '+TOUR.length;
+  $('#tour-next').style.visibility=s.wait?'hidden':'visible';
+  $('#tour-dots').innerHTML=TOUR.map((_,i)=>'<i class="'+(i<=tour.step?'on':'')+'"></i>').join('');
+  if(s.act)s.act();
+  switchTab(s.tab);
+  renderCard();
+  $$('.hl').forEach(el=>el.classList.remove('hl'));
+  if(s.h){const el=$(s.h);if(el){setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'center'}),80);el.classList.add('hl');}}
+}
+function tourNext(){
+  if(tour.step>=TOUR.length-1){endTour();return;}
+  tour.step++;
+  const s=TOUR[tour.step];
+  if(s.wait)tour.on='confirm';
+  renderTourStep();
+}
+function endTour(){tour.step=-1;tour.on=null;$('#tour').classList.remove('show');$$('.hl').forEach(el=>el.classList.remove('hl'));}
+function resetDemo(){
+  const fresh=JSON.parse(SNAPSHOT);
+  ENTITIES.length=0;ENTITIES.push(...fresh);
+  currentId='yl1';demoId=null;viewMode='blocks';endTour();renderAll();switchTab('dashboard');
+  toast('Демо-данные сброшены в исходное состояние','info');
+}
+
+/* ==================== INIT ==================== */
+renderAll();
+</script>
+</body>
+</html>
