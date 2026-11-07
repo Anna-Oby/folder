@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" type="device" version="24.7.17">
+  <diagram id="hr-actual-v3" name="HR Actual v3">
+    <mxGraphModel dx="1500" dy="1840" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="1840" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Lane_User" value="ПОЛЬЗОВАТЕЛЬ (HR / ДРП)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FBF7F2;strokeColor=#B98B6A;verticalAlign=top;fontSize=18;fontStyle=1;collapsible=0;selectable=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="480" height="1740" as="geometry" />
+        </mxCell>
+        <mxCell id="Lane_System" value="СИСТЕМА (1С + БЮДЖЕТНАЯ СИСТЕМА)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F8FB;strokeColor=#6E96AD;verticalAlign=top;fontSize=18;fontStyle=1;collapsible=0;selectable=0;" vertex="1" parent="1">
+          <mxGeometry x="520" y="80" width="940" height="1740" as="geometry" />
+        </mxCell>
+        <mxCell id="StartEvent" value="5-й рабочий день месяца,&lt;br&gt;следующего за отчётным" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=2;fontSize=13;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="818.0" y="128.0" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_ExportMapping" value="Сформировать выгрузку из 1С&lt;br&gt;и применить мэппинг РСБУ → МСФО" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#3F6F8F;strokeWidth=2;fontSize=16;fontColor=#23303A;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="650.0" y="234.0" width="400" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="Gateway_Mapping" value="Мэппинг и контрольные&lt;br&gt;суммы в порядке?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF7DF;strokeColor=#B3832E;strokeWidth=2;fontSize=13;fontColor=#23303A;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;align=left;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="800.0" y="370.0" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_FixMapping" value="Исправить мэппинг&lt;br&gt;или исходные данные" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#A56A43;strokeWidth=2;fontSize=16;fontColor=#23303A;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="125.0" y="374.0" width="330" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_LoadActual" value="Загрузить проводки&lt;br&gt;в Actual / HR Actual" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#3F6F8F;strokeWidth=2;fontSize=16;fontColor=#23303A;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="650.0" y="516.0" width="400" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_SelectVersion" value="Выбрать периметр и версию&lt;br&gt;бюджета / прогноза" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#A56A43;strokeWidth=2;fontSize=16;fontColor=#23303A;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="120.0" y="644.0" width="340" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_Calculate" value="Рассчитать начисления и соцвзносы:&lt;br&gt;1/3 квартальной и 1/12 годовой суммы" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#3F6F8F;strokeWidth=2;fontSize=16;fontColor=#23303A;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="640.0" y="640.0" width="420" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_Payments" value="Отнести выплаты к периодам начисления&lt;br&gt;и сформировать сторно (или нули)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#3F6F8F;strokeWidth=2;fontSize=16;fontColor=#23303A;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="635.0" y="815.0" width="430" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_Reconcile" value="Повторить расчёт, сверить итоги&lt;br&gt;и проверить дубли HR Actual" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#3F6F8F;strokeWidth=2;fontSize=16;fontColor=#23303A;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="635.0" y="1000.0" width="430" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Gateway_Controls" value="Контроли&lt;br&gt;пройдены?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF7DF;strokeColor=#B3832E;strokeWidth=2;fontSize=13;fontColor=#23303A;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;align=left;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="800.0" y="1140.0" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_FixCalculation" value="Исправить данные / параметры&lt;br&gt;и повторить расчёт" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#A56A43;strokeWidth=2;fontSize=16;fontColor=#23303A;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="120.0" y="1140.0" width="340" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_Approve" value="Проверить и утвердить&lt;br&gt;HR Actual" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#A56A43;strokeWidth=2;fontSize=16;fontColor=#23303A;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="120.0" y="1304.0" width="340" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="Gateway_Approved" value="HR Actual&lt;br&gt;утверждён?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF7DF;strokeColor=#B3832E;strokeWidth=2;fontSize=13;fontColor=#23303A;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;align=left;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="800.0" y="1300.0" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_Publish" value="Передать HR-data в отчётные формы&lt;br&gt;и значения Finance по мэппингу" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#3F6F8F;strokeWidth=2;fontSize=16;fontColor=#23303A;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="625.0" y="1450.0" width="450" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_Log" value="Зафиксировать версию, журнал&lt;br&gt;и уведомить участников" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFFFFF;strokeColor=#3F6F8F;strokeWidth=2;fontSize=16;fontColor=#23303A;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="640.0" y="1594.0" width="420" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="EndEvent" value="HR-факт закрыт" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#B64949;strokeWidth=3;fontSize=14;labelPosition=bottom;verticalLabelPosition=top;verticalAlign=top;align=center;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="816.0" y="1716.0" width="68" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="Annotation_BonusRules" value="ПРАВИЛА ВЫПЛАТ И СТОРНО&lt;br&gt;Есть выплата:&lt;br&gt;• cash и соцвзносы → период&lt;br&gt;  начисления;&lt;br&gt;• сторно = −начисления&lt;br&gt;  за 3 / 12 месяцев.&lt;br&gt;Нет выплаты: сторно = 0.&lt;br&gt;Февраль → декабрь ПГ (Q4)&lt;br&gt;Май → март (Q1)&lt;br&gt;Август → июнь (Q2)&lt;br&gt;Ноябрь → сентябрь (Q3)&lt;br&gt;Годовой → декабрь ПГ&lt;br&gt;ПГ = предыдущий год" style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFFDF5;strokeColor=#A68B45;fontSize=12;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="750" width="340" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="Flow_01" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="StartEvent" target="Task_ExportMapping">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_02" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Task_ExportMapping" target="Gateway_Mapping">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_03" value="Да" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Gateway_Mapping" target="Task_LoadActual">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_04" value="Нет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Gateway_Mapping" target="Task_FixMapping">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_05" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Task_FixMapping" target="Task_ExportMapping">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="290" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_06" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Task_LoadActual" target="Task_SelectVersion">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="850" y="630" />
+              <mxPoint x="290" y="630" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_07" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Task_SelectVersion" target="Task_Calculate">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_08" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Task_Calculate" target="Task_Payments">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_09" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Task_Payments" target="Task_Reconcile">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Task_Reconcile" target="Gateway_Controls">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_11" value="Да" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Gateway_Controls" target="Task_Approve">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="850" y="1270" />
+              <mxPoint x="290" y="1270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_12" value="Нет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Gateway_Controls" target="Task_FixCalculation">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Task_FixCalculation" target="Task_Reconcile">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="290" y="1050" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Task_Approve" target="Gateway_Approved">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="780" y="1340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_15" value="Нет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Gateway_Approved" target="Task_Approve">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="780" y="1372" />
+              <mxPoint x="460" y="1372" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_16" value="Да" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Gateway_Approved" target="Task_Publish">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Task_Publish" target="Task_Log">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52616B;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#52616B;" edge="1" parent="1" source="Task_Log" target="EndEvent">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Association_BonusRules" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#A68B45;strokeWidth=1.5;" edge="1" parent="1" source="Task_Payments" target="Annotation_BonusRules">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
